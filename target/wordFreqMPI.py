@@ -26,6 +26,11 @@ def main():
     file1_name = "file_01.txt"
     case_sensitive = False
     top_n = 5
+    # Timers (measured with MPI.Wtime for consistency across processes)
+    t_read_file1 = 0.0
+    t_distribution = 0.0
+    t_collect = 0.0
+
     
     palabras_buscar = None
     mis_archivos = []
