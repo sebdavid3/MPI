@@ -7,10 +7,6 @@ from dask.distributed import Client, LocalCluster
 
 
 def contar_palabras_en_archivo(ruta, palabras_buscar, case_sensitive=False):
-    """Cuenta ocurrencias de las palabras indicadas en un archivo.
-
-    Usa una tokenización simple basada en \w para evitar puntuación.
-    """
     contador = Counter()
     palabra_pat = re.compile(r"\w+", flags=re.UNICODE)
     with open(ruta, "r", encoding="utf-8") as f:
@@ -25,12 +21,7 @@ def contar_palabras_en_archivo(ruta, palabras_buscar, case_sensitive=False):
 
 
 def main():
-    """Script Dask para calcular top-N basado en apariciones en los otros archivos.
 
-    Uso (posicional o con --workers):
-      python wordFreqDask.py 5
-      python wordFreqDask.py --workers 5
-    """
     parser = argparse.ArgumentParser()
     parser.add_argument("workers", nargs="?", type=int, help="Número de workers (posicional)")
     parser.add_argument("-w", "--workers", dest="wopt", type=int, help="Número de workers (opcional)")
@@ -39,10 +30,20 @@ def main():
     parser.add_argument("--case-sensitive", dest="case", action="store_true", help="Mantener mayúsculas/minúsculas")
     args = parser.parse_args()
 
-    # Elegir número de workers: preferir la opción larga si se proporcionó
-    n_workers = args.wopt if args.wopt is not None else (args.workers if args.workers is not None else 2)
+    if args.wopt is not None:
+        n_workers = args.wopt
+    elif args.workers is not None:
+        n_workers = args.workers
+    else:
+        n_workers = 2
 
-    dir_path = args.directorio if args.directorio else ("/app" if os.path.exists("/app") else os.path.abspath("."))
+    if args.directorio:
+        dir_path = args.directorio
+    else:
+        if os.path.exists("/app"):
+            dir_path = "/app"
+        else:
+            dir_path = os.path.abspath(".")
     file1 = "file_01.txt"
 
     # Leer file_01
@@ -61,15 +62,14 @@ def main():
     # Lista de archivos a procesar
     archivos = [os.path.join(dir_path, a) for a in os.listdir(dir_path) if a.endswith(".txt") and a != file1]
 
-    # Poner en marcha el cluster local de Dask
     t0_cluster = time.perf_counter()
     cluster = LocalCluster(n_workers=n_workers, threads_per_worker=1)
     client = Client(cluster)
     t1_cluster = time.perf_counter()
 
-    # Mapear la función sobre los archivos
     t0_sched = time.perf_counter()
-    futures = client.map(lambda p: contar_palabras_en_archivo(p, palabras1, args.case), archivos)
+    # enviar la misma palabra_buscar y case_sensitive a cada tarea
+    futures = client.map(contar_palabras_en_archivo, archivos, palabras_buscar=palabras1, case_sensitive=args.case)
     resultados = client.gather(futures)
     t1_sched = time.perf_counter()
 

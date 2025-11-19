@@ -49,6 +49,7 @@ apk --update add nano
 
 
 ## Shared Memory
+
 ```bash
 docker run --rm -v "%cd%\target:/app" augustosalazar/slim-mpi mpiexec --allow-run-as-root -n 3 python /app/shared01.py
 Proceso 2 de 3 iniciado.
@@ -56,4 +57,36 @@ Proceso 0 de 3 iniciado.
 Proceso 1 de 3 iniciado.
 Contenido del array compartido:
 [ 0 10 20]
+```
+
+## Word Frequency Analysis
+
+### Generate test files
+
+Primero genera archivos de prueba con palabras en español:
+
+```bash
+docker run --rm -v "%cd%\target:/app" augustosalazar/slim-mpi python /app/generator.py
+```
+
+### Serial word frequency version
+
+Análisis secuencial de frecuencia de palabras:
+
+```bash
+docker run --rm -v "%cd%\target:/app" augustosalazar/slim-mpi python /app/wordFreq.py
+```
+
+### MPI word frequency version
+
+Análisis paralelo de frecuencia de palabras usando MPI con 3 procesos:
+
+```bash
+docker run --rm -v "%cd%\target:/app" augustosalazar/slim-mpi mpiexec --allow-run-as-root -n 3 python /app/wordFreqMPI.py
+```
+
+Para usar más procesos (recomendado con muchos archivos):
+
+```bash
+docker run --rm -v "%cd%\target:/app" augustosalazar/slim-mpi mpiexec --allow-run-as-root -n 4 python /app/wordFreqMPI.py
 ```
