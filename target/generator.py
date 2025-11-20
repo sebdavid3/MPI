@@ -5,7 +5,8 @@ def generar_textos_español(
     num_files=100,
     min_words=90_000,
     max_words=100_000,
-    word_list_path="spanish_words.info"
+    word_list_path="spanish_words.info",
+    start_index=1
 ):
     """
     Genera num_files archivos de texto (file_01.txt … file_100.txt)
@@ -24,7 +25,7 @@ def generar_textos_español(
         raise RuntimeError("El archivo de vocabulario está vacío.")
 
     # Generar los archivos directamente en script_dir
-    for i in range(1, num_files + 1):
+    for i in range(start_index, start_index + num_files):
         count = random.randint(min_words, max_words)
         palabras = random.choices(vocab, k=count)
         filename = f"file_{i:02d}.txt"
