@@ -22,7 +22,9 @@ def main():
     rank = comm.Get_rank()
     size = comm.Get_size()
     
-    dir_path = "/app"
+    # Determine directory path
+    # If /app exists (Docker), use it. Otherwise use the directory where the script is located.
+    dir_path = "/app" if os.path.exists("/app") else os.path.dirname(os.path.abspath(__file__))
     file1_name = "file_01.txt"
     case_sensitive = False
     top_n = 5

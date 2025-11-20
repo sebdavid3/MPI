@@ -39,7 +39,9 @@ def topN_palabras_file1_en_otros(dir_path, file1_name="file_01.txt", case_sensit
 
 def main():
     # Parámetros fijos (no se usan opciones por línea de comandos)
-    dir_path = "/app" if os.path.exists("/app") else os.path.abspath(".")
+    # Determine directory path
+    # If /app exists (Docker), use it. Otherwise use the directory where the script is located.
+    dir_path = "/app" if os.path.exists("/app") else os.path.dirname(os.path.abspath(__file__))
     file1_name = "file_01.txt"                # Archivo base
     case_sensitive = False                   # ¿Distinguir mayúsculas?
     top_n = 10                               # Número de palabras a extraer
