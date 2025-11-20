@@ -56,7 +56,7 @@ def main():
     # 1: Línea base (overhead del framework)
     # 4: Núcleos físicos (Punto óptimo teórico para CPU-bound puro)
     # 8: Hilos lógicos (Uso de Hyper-threading)
-    worker_counts = [1, 4, 8]
+    worker_counts = [1,2,4,8]
     
     # --- Paths ---
     # We assume the script is run from the root MPI directory
